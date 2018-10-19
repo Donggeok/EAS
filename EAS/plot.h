@@ -9,14 +9,14 @@
 #include <math.h>
 #define WINDOW_WIDTH 600
 #define WINDOW_HEIGHT 600
-using namespace cv;
+
 using namespace std;
 
 struct LineType
 {
 	char type;
 	bool is_need_lined;
-	Scalar color;
+	cv::Scalar color;
 };
 
 class CPlot
@@ -147,7 +147,7 @@ void CPlot::clear()
 	this->lineTypeSet.clear();
 }
 
-void CPlot::title(string title_name, CvScalar title_color = Scalar(0, 0, 0))
+void CPlot::title(string title_name, CvScalar title_color = cv::Scalar(0, 0, 0))
 {
 	int chw = 6, chh = 10;
 	IplImage *image = this->Figure;
@@ -158,7 +158,7 @@ void CPlot::title(string title_name, CvScalar title_color = Scalar(0, 0, 0))
 	cvPutText(image, title_name.c_str(), cvPoint(x, y), &font, title_color);
 }
 
-void CPlot::xlabel(string xlabel_name, CvScalar label_color = Scalar(0, 0, 0))
+void CPlot::xlabel(string xlabel_name, CvScalar label_color = cv::Scalar(0, 0, 0))
 {
 	int chw = 6, chh = 10;
 	int bs = this->border_size;
@@ -177,7 +177,7 @@ void CPlot::xlabel(string xlabel_name, CvScalar label_color = Scalar(0, 0, 0))
 	int y = x_axis_pos + bs / 1.5;
 	cvPutText(this->Figure, xlabel_name.c_str(), cvPoint(x, y), &font, label_color);
 }
-void CPlot::ylabel(string ylabel_name, CvScalar label_color = Scalar(0, 0, 0))
+void CPlot::ylabel(string ylabel_name, CvScalar label_color = cv::Scalar(0, 0, 0))
 {
 	CvFont font;
 	cvInitFont(&font, CV_FONT_HERSHEY_PLAIN, 1.5, 0.7, 0, 1, CV_AA);
@@ -439,68 +439,5 @@ void CPlot::DrawData(IplImage *image)
 	}
 }
 
-
-/**
-上面提供是符合C语言使用习惯的用法，下面提供C++类型，减少传入的参数
-*/
-
-class Plot : public CPlot
-{
-public:
-	//重载这两个函数 传参简单
-	template<class T>
-	void plot(vector<T> Y, CvScalar color, char type = '*', bool is_need_lined = true);
-	template<class T>
-	void plot(vector< Point_<T> > p, CvScalar color, char type = '*', bool is_need_lined = true);
-	//增加一个函数把C版本的 IplImage 转换成Mat
-
-};
-
-
-
-template<class T>
-void Plot::plot(vector<T> Y, CvScalar color, char type, bool is_need_lined)
-{
-	//对数据进行存储
-	T tempX, tempY;
-	vector<CvPoint2D64f>data;
-	for (int i = 0; i < Y.size(); i++)
-	{
-		tempX = i;
-		tempY = Y[i];
-		data.push_back(cvPoint2D64f((double)tempX, (double)tempY));
-	}
-	this->dataset.push_back(data);
-	LineType LT;
-	LT.type = type;
-	LT.color = color;
-	LT.is_need_lined = is_need_lined;
-	this->lineTypeSet.push_back(LT);
-	this->DrawData(this->Figure);
-}
-
-template<class T>
-void Plot::plot(vector< Point_<T> > p, CvScalar color, char type, bool is_need_lined)
-{
-	//对数据进行存储
-	T tempX, tempY;
-	vector<CvPoint2D64f>data;
-	for (int i = 0; i < p.size(); i++)
-	{
-		tempX = p[i].x;
-		tempY = p[i].y;
-		data.push_back(cvPoint2D64f((double)tempX, (double)tempY));
-	}
-	this->dataset.push_back(data);
-	LineType LT;
-	LT.type = type;
-	LT.color = color;
-	LT.is_need_lined = is_need_lined;
-	this->lineTypeSet.push_back(LT);
-
-	//printf("data count:%d\n", this->dataset.size());
-
-	this->DrawData(this->Figure); //每次都是重新绘制
-}
 
 #endif

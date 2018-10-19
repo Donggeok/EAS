@@ -20,9 +20,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="plot.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="eas.h">
       <Filter>头文件</Filter>
     </ClInclude>
